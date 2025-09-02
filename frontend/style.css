@@ -1,0 +1,794 @@
+/* Variables CSS */
+:root {
+    --primary: #6366f1;
+    --primary-hover: #5855eb;
+    --primary-light: rgba(99, 102, 241, 0.1);
+    --secondary: #f8fafc;
+    --accent: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --border: #e2e8f0;
+    --bg-card: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --radius: 0.75rem;
+    --glass: rgba(255, 255, 255, 0.95);
+}
+
+/* Reset de base */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Header moderne */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--glass);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.logo i {
+    font-size: 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stats-badge {
+    background: var(--secondary);
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.info-btn {
+    background: none;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: inherit;
+}
+
+.info-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Carte */
+#map {
+    height: 100vh;
+    width: 100%;
+    padding-top: 80px; /* Espace pour le header */
+}
+
+/* Bouton d'ajout moderne */
+#add-bench-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 3rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: var(--shadow-xl);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 999;
+    font-family: inherit;
+}
+
+#add-bench-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+#add-bench-btn:active {
+    transform: translateY(-1px);
+}
+
+#add-bench-btn:disabled {
+    background: var(--warning);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Contrôles de zoom en bas à gauche */
+.leaflet-control-zoom {
+    position: absolute !important;
+    bottom: 1rem !important;
+    left: 1rem !important;
+    top: auto !important;
+    background: var(--glass) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: none !important;
+    overflow: hidden;
+}
+
+.leaflet-control-zoom a {
+    background: transparent !important;
+    border: none !important;
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
+}
+
+.leaflet-control-zoom a:hover {
+    background: var(--primary) !important;
+    color: white !important;
+}
+
+/* Contrôle de recherche moderne */
+.leaflet-control-geocoder {
+    position: absolute !important;
+    top: 100px !important;
+    left: 1rem !important;
+    z-index: 1000;
+    background: var(--glass) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow-lg) !important;
+    border: none !important;
+    overflow: hidden;
+}
+
+.leaflet-control-geocoder.leaflet-bar,
+.leaflet-control-geocoder.leaflet-bar .leaflet-bar-part,
+.leaflet-control-geocoder.leaflet-bar .leaflet-control-geocoder-icon {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.leaflet-control-geocoder-form input {
+    all: unset !important;
+    width: 280px !important;
+    max-width: 280px !important;
+    flex: none !important;
+    padding: 1rem 1.5rem !important;
+    font-size: 1rem !important;
+    color: var(--text-primary) !important;
+    background: transparent !important;
+    font-family: inherit !important;
+}
+
+.leaflet-control-geocoder-form input::placeholder {
+    color: var(--text-muted) !important;
+}
+
+.leaflet-control-geocoder.leaflet-bar .leaflet-control-geocoder-icon {
+    display: none !important;
+}
+
+/* Popups modernes */
+.leaflet-popup-content-wrapper {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-xl);
+    border: none;
+    overflow: hidden;
+}
+
+.leaflet-popup-content {
+    margin: 0 !important;
+    padding: 1.5rem;
+    min-width: 320px;
+    max-width: 400px;
+    font-family: inherit;
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+.leaflet-popup-close-button {
+    position: absolute !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    width: 2rem !important;
+    height: 2rem !important;
+    background: var(--secondary) !important;
+    border: none !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+    z-index: 10;
+    text-indent: 0 !important;
+    font-size: 1rem !important;
+    color: var(--text-secondary) !important;
+}
+
+.leaflet-popup-close-button:hover {
+    background: var(--danger) !important;
+    color: white !important;
+    transform: scale(1.1) !important;
+}
+
+.leaflet-popup-tip {
+    background: var(--bg-card) !important;
+}
+
+/* Contenu des popups de bancs */
+.leaflet-popup-content b {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: block;
+    margin-bottom: 0.75rem;
+}
+
+.leaflet-popup-content img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    box-shadow: var(--shadow-md);
+}
+
+/* Étoiles de notation */
+.leaflet-popup-content div:has(span:contains("★")) {
+    margin: 0.5rem 0;
+    font-size: 1.125rem;
+}
+
+.leaflet-popup-content span[style*="color:#888"] {
+    color: var(--text-secondary) !important;
+    font-size: 0.875rem !important;
+    font-weight: 500;
+}
+
+/* Coordonnées */
+.leaflet-popup-content div[style*="font-size:13px"] {
+    background: var(--secondary) !important;
+    padding: 0.75rem !important;
+    border-radius: 0.5rem !important;
+    margin: 1rem 0 !important;
+    font-size: 0.875rem !important;
+    color: var(--text-secondary) !important;
+}
+
+.leaflet-popup-content a[href*="google.com/maps"] {
+    color: var(--primary) !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.25rem !important;
+    margin-top: 0.5rem !important;
+}
+
+.leaflet-popup-content a[href*="google.com/maps"]:hover {
+    text-decoration: underline !important;
+}
+
+/* Section commentaires */
+#comments-list,
+div[id^="comments-"] {
+    max-height: 150px !important;
+    overflow-y: auto !important;
+    margin: 0.75rem 0 !important;
+    padding: 0.5rem !important;
+    background: var(--secondary) !important;
+    border-radius: 0.5rem !important;
+    border: none !important;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+div[id^="comments-"] div[style*="background"] {
+    background: var(--bg-card) !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0.75rem !important;
+    border-radius: 0.5rem !important;
+    box-shadow: var(--shadow-sm) !important;
+}
+
+div[id^="comments-"] strong {
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    font-size: 0.875rem !important;
+}
+
+div[id^="comments-"] small {
+    color: var(--text-muted) !important;
+    font-size: 0.75rem !important;
+}
+
+/* Formulaires dans les popups */
+.bs-popup {
+    font-family: inherit;
+}
+
+.bs-popup label {
+    display: block;
+    margin: 1rem 0 0.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.bs-popup input[type=text],
+.bs-popup input[type=number],
+.bs-popup textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    background: var(--bg-card);
+    transition: border-color 0.2s ease;
+    font-family: inherit;
+}
+
+.bs-popup input[type=text]:focus,
+.bs-popup input[type=number]:focus,
+.bs-popup textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.bs-popup textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Zone de drag & drop */
+.bs-drop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    height: 120px;
+    border: 2px dashed var(--border);
+    border-radius: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--secondary);
+}
+
+.bs-drop:hover,
+.bs-drop.dragover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.bs-drop svg {
+    width: 2rem;
+    height: 2rem;
+    opacity: 0.6;
+}
+
+.bs-drop.loading {
+    color: var(--primary);
+    border-color: var(--primary);
+    position: relative;
+}
+
+.bs-drop .bs-spinner-small {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.bs-drop img.bs-thumb {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 0.5rem;
+}
+
+/* Boutons */
+.bs-popup button,
+.leaflet-popup-content button {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.875rem;
+}
+
+.bs-popup button:hover,
+.leaflet-popup-content button:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Bouton "Charger plus" */
+button[onclick*="fetchPaginatedComments"] {
+    width: auto !important;
+    background: var(--secondary) !important;
+    color: var(--text-primary) !important;
+    padding: 0.5rem 1rem !important;
+    margin: 0.5rem 0 0 0 !important;
+    font-size: 0.75rem !important;
+    border-radius: 0.375rem !important;
+}
+
+button[onclick*="fetchPaginatedComments"]:hover {
+    background: var(--border) !important;
+    transform: none !important;
+}
+
+/* Overlay de chargement */
+.bs-upload-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.bs-upload-overlay > div {
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: var(--radius);
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+}
+
+.bs-spinner {
+    width: 3rem;
+    height: 3rem;
+    border: 3px solid var(--border);
+    border-top: 3px solid var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+.bs-percent {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.125rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Marqueur de position utilisateur */
+.user-div-icon {
+    background: transparent !important;
+    border: none !important;
+}
+
+.user-div-icon .pulse {
+    width: 1.5rem;
+    height: 1.5rem;
+    display: block;
+    border-radius: 50%;
+    background: var(--primary);
+    border: 3px solid white;
+    box-shadow: var(--shadow-lg);
+    animation: locationPulse 2s infinite;
+}
+
+@keyframes locationPulse {
+    0%, 100% { 
+        box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4), var(--shadow-lg); 
+    }
+    50% { 
+        box-shadow: 0 0 0 10px rgba(99, 102, 241, 0), var(--shadow-lg); 
+    }
+}
+
+/* Modal moderne */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal.show {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+}
+
+.modal-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modal-title i {
+    color: var(--primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+    color: var(--danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.modal-body {
+    padding: 2rem;
+    overflow-y: auto;
+    max-height: calc(80vh - 80px);
+}
+
+.version-badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.modal-description {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.stats-grid {
+    margin: 1.5rem 0;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--secondary);
+    border-radius: 0.75rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-icon {
+    font-size: 2rem;
+    color: var(--accent);
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.links-section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+.links-section h3 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+}
+
+.links-grid {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.link-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.link-item:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .header-actions {
+        gap: 0.5rem;
+    }
+
+    .stats-badge {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .info-btn {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    #add-bench-btn {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        border-radius: 1rem;
+        justify-content: center;
+    }
+
+    .leaflet-control-geocoder-form input {
+        width: 240px !important;
+        padding: 0.875rem 1rem !important;
+    }
+
+    .leaflet-popup-content {
+        min-width: 280px;
+        padding: 1rem;
+    }
+
+    .modal-content {
+        width: 95%;
+    }
+
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .links-grid {
+        flex-direction: column;
+    }
+}
