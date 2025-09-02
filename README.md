@@ -1,12 +1,12 @@
 # 🪑 BenchSpotter
 
-![Interface principale](/images/screen.png)
+![Interface principale](/images/admin.png)
 
 **BenchSpotter** est un projet collaboratif permettant de cartographier et partager les bancs offrant les plus belles vues. Cette application web moderne permet aux utilisateurs de découvrir, ajouter et évaluer des bancs publics avec leurs photos et commentaires.
 
 ## Interface d'administration
 
-![Interface admin](/images/admin.png)
+![Interface admin](/images/screen.png)
 
 ## Fonctionnalités
 
