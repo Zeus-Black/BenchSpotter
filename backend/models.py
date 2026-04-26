@@ -8,9 +8,13 @@ class Bench(Base):
     id = Column(Integer, primary_key=True, index=True)
     latitude = Column(Float, nullable=False)
     longitude = Column(Float, nullable=False)
+    title = Column(String, nullable=True)
     description = Column(String, nullable=True)
     note = Column(Float, default=0, nullable=True)
     image = Column(String, nullable=True)
+    privacy = Column(Float, default=3.0, nullable=True)
+    romantic = Column(Float, default=3.0, nullable=True)
+    comfort = Column(Float, default=3.0, nullable=True)
     comments = relationship("Comment", back_populates="bench", cascade="all, delete-orphan")
 
 class Comment(Base):

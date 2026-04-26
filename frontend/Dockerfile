@@ -1,23 +1,35 @@
-# frontend/Dockerfile
-FROM node:20-alpine AS build
+# ─── Stage 1: deps ───────────────────────────────────────────────────────────
+FROM node:20-alpine AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY package.json ./
+RUN npm install
 
-WORKDIR /src
-COPY index.html style.css script.js favicon.ico ./
-COPY img ./img
+# ─── Stage 2: builder ────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_MAPBOX_TOKEN
+ENV NEXT_PUBLIC_MAPBOX_TOKEN=$NEXT_PUBLIC_MAPBOX_TOKEN
+RUN npm run build
 
-RUN npm init -y \
- && npm add -D esbuild \
- && npx esbuild script.js \
-        --bundle --minify \
-        --outfile=script.min.js
+# ─── Stage 3: runner ─────────────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
-FROM nginx:alpine
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-COPY --from=build /src/index.html  /usr/share/nginx/html/
-COPY --from=build /src/style.css   /usr/share/nginx/html/
-COPY --from=build /src/script.min.js /usr/share/nginx/html/
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-COPY --from=build /src/img /usr/share/nginx/html/img
-COPY --from=build /src/favicon.ico /usr/share/nginx/html/
+USER nextjs
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-RUN mv /usr/share/nginx/html/script.min.js /usr/share/nginx/html/script.js
+CMD ["node", "server.js"]

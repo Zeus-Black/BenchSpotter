@@ -5,7 +5,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 from schemas import BenchOut, CommentOut
 from sqlalchemy.orm import joinedload, Session
-from sqlalchemy import func
+from sqlalchemy import func, text, inspect as sa_inspect
 from typing import List, Optional
 from fastapi.staticfiles import StaticFiles
 import models, crud, database
@@ -20,13 +20,36 @@ import bleach
 app = FastAPI()
 load_dotenv()
 
+
+@app.on_event("startup")
+def migrate_db():
+    """Add new columns to existing DBs without breaking old data."""
+    try:
+        inspector = sa_inspect(database.engine)
+        if not inspector.has_table("benches"):
+            return
+        existing = {c["name"] for c in inspector.get_columns("benches")}
+        migrations = [
+            ("title",    "ALTER TABLE benches ADD COLUMN title VARCHAR"),
+            ("privacy",  "ALTER TABLE benches ADD COLUMN privacy FLOAT DEFAULT 3.0"),
+            ("romantic", "ALTER TABLE benches ADD COLUMN romantic FLOAT DEFAULT 3.0"),
+            ("comfort",  "ALTER TABLE benches ADD COLUMN comfort FLOAT DEFAULT 3.0"),
+        ]
+        with database.engine.connect() as conn:
+            for col, sql in migrations:
+                if col not in existing:
+                    conn.execute(text(sql))
+            conn.commit()
+    except Exception as e:
+        print(f"[migration] warning: {e}")
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_USERNAME = os.getenv("ADMIN_USERNAME")
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD")
 
 app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
-origins = ["https://benchspotter.live"]
+origins = os.getenv("CORS_ORIGINS", "https://benchspotter.live,http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -43,16 +66,24 @@ templates = Jinja2Templates(directory="templates")
 async def create_bench(
     latitude: float = Form(...),
     longitude: float = Form(...),
+    title: Optional[str] = Form(None),
     description: Optional[str] = Form(None),
     note: Optional[float] = Form(None),
+    privacy: Optional[float] = Form(3.0),
+    romantic: Optional[float] = Form(3.0),
+    comfort: Optional[float] = Form(3.0),
     image: Optional[UploadFile] = File(None),
     db: Session = Depends(database.get_db)
 ):
+    clean_title = bleach.clean(title or "", tags=[], strip=True)[:100]
     clean_description = bleach.clean(description or "", tags=[], strip=True)
     if len(clean_description) > 300:
         raise HTTPException(status_code=400, detail="Description too long")
     if note is not None and not (0 <= note <= 5):
         raise HTTPException(status_code=400, detail="Note outside the range 0-5")
+    for val, name in [(privacy, "privacy"), (romantic, "romantic"), (comfort, "comfort")]:
+        if val is not None and not (0 <= val <= 5):
+            raise HTTPException(status_code=400, detail=f"{name} outside 0-5")
 
     filename = None
     if image and image.filename:
@@ -77,7 +108,13 @@ async def create_bench(
             path = f"static/{filename}"
 
             img.save(path, format="JPEG", quality=70, optimize=True)
-    return crud.create_bench(db, latitude, longitude, clean_description, note, filename)
+    return crud.create_bench(
+        db, latitude, longitude, clean_description, note, filename,
+        title=clean_title or None,
+        privacy=privacy or 3.0,
+        romantic=romantic or 3.0,
+        comfort=comfort or 3.0,
+    )
 
 @app.post("/benches/{bench_id}/comments")
 def post_comment(
@@ -131,17 +168,15 @@ def get_comments(bench_id: int, skip: int = Query(0, ge=0), limit: int = Query(5
 
 @app.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    # Starlette 1.0.0 : request en premier argument, request retiré du contexte
+    return templates.TemplateResponse(request, "login.html")
 
 @app.post("/login")
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         request.session["user"] = "admin"
         return RedirectResponse(url="/admin", status_code=302)
-    return templates.TemplateResponse("login.html", {
-        "request": request,
-        "error": True
-    })
+    return templates.TemplateResponse(request, "login.html", {"error": True})
 
 def require_login(request: Request):
     if request.session.get("user") != "admin":
@@ -151,7 +186,7 @@ def require_login(request: Request):
 def admin_page(request: Request):
     if request.session.get("user") != "admin":
         return RedirectResponse(url="/login", status_code=302)
-    return templates.TemplateResponse("admin.html", {"request": request})
+    return templates.TemplateResponse(request, "admin.html")
 
 @app.get("/admin/benches", dependencies=[Depends(require_login)])
 def get_all_benches(db: Session = Depends(database.get_db)):
@@ -166,7 +201,7 @@ def logout(request: Request):
 def stats_page(request: Request):
     if request.session.get("user") != "admin":
         return RedirectResponse(url="/login", status_code=302)
-    return templates.TemplateResponse("stats.html", {"request": request})
+    return templates.TemplateResponse(request, "stats.html")
     
 @app.get("/admin/stats/data", dependencies=[Depends(require_login)])
 def get_stats(db: Session = Depends(database.get_db)):

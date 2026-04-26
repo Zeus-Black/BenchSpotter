@@ -17,12 +17,16 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_MAPBOX_TOKEN: ${NEXT_PUBLIC_MAPBOX_TOKEN}
     container_name: benchspotter-frontend
     restart: always
     environment:
-      - API_URL=/api
+      - BACKEND_URL=http://backend:8000
     expose:
-      - "80"
+      - "3000"
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -32,7 +36,17 @@ services:
     restart: always
     working_dir: /app
     command: uvicorn main:app --host 0.0.0.0 --port 8000
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - CORS_ORIGINS=https://benchspotter.live
     volumes:
-      - ./backend:/app
+      - backend-static:/app/static
+      - backend-db:/app/data
     expose:
       - "8000"
+
+volumes:
+  backend-static:
+  backend-db:

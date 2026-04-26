@@ -13,14 +13,18 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: benchspotter-frontend-dev
     environment:
-      - API_URL=/api
+      - NEXT_PUBLIC_MAPBOX_TOKEN=${NEXT_PUBLIC_MAPBOX_TOKEN}
+      - BACKEND_URL=http://backend:8000
     volumes:
-      - ./frontend:/usr/share/nginx/html:ro
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
     expose:
-      - "80"
+      - "3000"
+    depends_on:
+      - backend
 
   backend:
     build:
@@ -29,6 +33,11 @@ services:
     container_name: benchspotter-backend-dev
     working_dir: /app
     command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - SECRET_KEY=dev-secret-key-change-me
+      - ADMIN_USERNAME=admin
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+      - CORS_ORIGINS=http://localhost:3000,http://localhost
     volumes:
       - ./backend:/app
     expose:

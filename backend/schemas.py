@@ -18,9 +18,13 @@ class BenchOut(BaseModel):
     id: int
     latitude: float
     longitude: float
-    description: Optional[str]
+    title: Optional[str] = None
+    description: Optional[str] = None
     note: float
-    image: Optional[str]
+    image: Optional[str] = None
+    privacy: float = 3.0
+    romantic: float = 3.0
+    comfort: float = 3.0
     comments: List[CommentOut] = []
 
     class Config:
