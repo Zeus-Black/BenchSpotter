@@ -4,7 +4,7 @@ import mapboxgl from 'mapbox-gl'
 import 'mapbox-gl/dist/mapbox-gl.css'
 import type { Bench } from '@/types'
 
-const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || 'your_mapbox_public_token_here'
+const TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || ''
 
 // Streets-v12 = look le plus proche Google Maps
 const MAP_STYLE = 'mapbox://styles/mapbox/streets-v12'
